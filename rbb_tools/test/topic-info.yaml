@@ -1,0 +1,11 @@
+title: "Topic Info Test"
+tag: "topic-info"
+description: ""
+author: ""
+rules:
+  topic-info:
+    plugin: "rbb_tools.plugins.detailed_topic_info"
+    config:
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.AllTopicsMatchingRule"
+        config:

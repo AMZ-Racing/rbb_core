@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Setup the correct internal python paths
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export PYTHONPATH="${PYTHONPATH}:${DIR}/../rbb_storage/src:${DIR}/src"
+
+# Run the WSGI server
+gunicorn -w 4 -b 0.0.0.0:8080 rbb_server:app

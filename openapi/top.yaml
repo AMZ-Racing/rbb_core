@@ -1,0 +1,2487 @@
+swagger: "2.0"
+
+# AMZ-Driverless
+#  Copyright (c) 2019 Authors:
+#   - Huub Hendrikx <hhendrik@ethz.ch>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+###########################
+# Meta
+###########################
+
+info:
+  title: Rosbag Bazaar API
+  description: API to access the Rosbag Bazaar service
+  version: "0.1.1"
+  contact:
+    email: hhendrik@student.ethz.ch
+basePath: /api/v0
+schemes:
+  - https
+  - http
+tags:
+  - name: basic
+    description: Basic API calls
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+ - basicAuth: []
+
+###########################
+# API Paths
+###########################
+paths:
+  /extraction/configs:
+    get:
+      tags:
+        - basic
+      summary: List available configurations
+      operationId: list_extraction_configurations
+      responses:
+        '200':
+          description: Returns an array of configurations.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BagExtractionConfiguration'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.extraction_controller"
+
+  /extraction/configs/{config_name}:
+    get:
+      tags:
+        - basic
+      summary: Get configuration details
+      operationId: get_extraction_config
+      parameters:
+        - name: config_name
+          in: path
+          description: Name of the configuration
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns information about the configuration
+          schema:
+            $ref: "#/definitions/BagExtractionConfiguration"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Configuration not found
+      x-swagger-router-controller: "rbb_server.controllers.extraction_controller"
+    put:
+      tags:
+        - basic
+      summary: Create/update configuration
+      operationId: put_extraction_configuration
+      parameters:
+        - name: config_name
+          in: path
+          description: Name of the configuration
+          required: true
+          type: string
+        - name: block_on_existing
+          in: query
+          description: Only create a new one, block if one already exists
+          required: false
+          type: boolean
+        # Name cannot be just 'configuration' because that breaks the typescript generator
+        - name: configuration_obj
+          in: body
+          description: Configuration information
+          required: true
+          schema:
+            $ref: '#/definitions/BagExtractionConfiguration'
+      responses:
+        '200':
+          description: Returns the configuration information
+          schema:
+            $ref: "#/definitions/BagExtractionConfiguration"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.extraction_controller"
+    delete:
+      tags:
+        - basic
+      summary: Delete extraction configuration
+      operationId: delete_extraction_configuration
+      parameters:
+        - name: config_name
+          in: path
+          description: Name of the configuration
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Succesfully deleted.
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.extraction_controller"
+
+
+  /tags:
+    get:
+      tags:
+        - basic
+      summary: List all tags
+      operationId: list_tags
+      responses:
+        '200':
+          description: Returns an array of tags.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tag'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /tags/{tag}:
+    get:
+      tags:
+        - basic
+      summary: Get tag info
+      operationId: get_tag
+      parameters:
+        - name: tag
+          in: path
+          description: Name of the tag
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns information about the tag
+          schema:
+            $ref: "#/definitions/Tag"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+    put:
+      tags:
+        - basic
+      summary: Create/update tag
+      operationId: put_tag
+      parameters:
+        - name: tag
+          in: path
+          description: Name of the tag
+          required: true
+          type: string
+        - name: tag_obj
+          in: body
+          description: Tag information
+          required: true
+          schema:
+            $ref: '#/definitions/Tag'
+      responses:
+        '200':
+          description: Returns the new tag information
+          schema:
+            $ref: "#/definitions/Tag"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /stores:
+    get:
+      tags:
+        - basic
+      summary: List available stores
+      operationId: list_stores
+      responses:
+        '200':
+          description: Returns an array of bag stores.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BagStoreDetailed'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.store_controller"
+
+  /stores/{store_name}/authorize/{step}:
+    get:
+      tags:
+        - basic
+      summary: Authorization step forwarded to storage plugin
+      operationId: bag_store_authorize_step_get
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: step
+          in: path
+          description: Step of the authorization procedure
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Unsupported
+      x-swagger-router-controller: "rbb_server.controllers.store_controller"
+    post:
+      tags:
+        - basic
+      summary: Authorization step forwarded to storage plugin
+      operationId: bag_store_authorize_step_post
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: step
+          in: path
+          description: Step of the authorization procedure
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Unsupported
+      x-swagger-router-controller: "rbb_server.controllers.store_controller"
+
+  /stores/{store_name}:
+    get:
+      tags:
+        - basic
+      summary: Get store details
+      operationId: get_store
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns information about the store
+          schema:
+            $ref: "#/definitions/BagStoreDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Store not found
+      x-swagger-router-controller: "rbb_server.controllers.store_controller"
+    put:
+      tags:
+        - basic
+      summary: Create/update store
+      operationId: put_store
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: block_on_existing
+          in: query
+          description: Only create a new one, block if one already exists
+          required: false
+          type: boolean
+        - name: store
+          in: body
+          description: Store information
+          required: true
+          schema:
+            $ref: '#/definitions/BagStoreDetailed'
+      responses:
+        '200':
+          description: Returns the store information
+          schema:
+            $ref: "#/definitions/BagStoreDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.store_controller"
+    delete:
+      tags:
+        - basic
+      summary: Delete file store
+      operationId: delete_store
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Succesfully deleted.
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.store_controller"
+
+  /stores/{store_name}/auto-extraction-configs:
+    get:
+      tags:
+        - basic
+      summary: Get list of auto extraction configs
+      operationId: get_store_extraction_configs
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns a list of linked configurations
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/BagExtractionConfiguration"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Store not found
+      x-swagger-router-controller: "rbb_server.controllers.extraction_controller"
+    put:
+      tags:
+        - basic
+      summary: Create/update store
+      operationId: put_store_extraction_configs
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: config_list
+          in: body
+          description: List of config names
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Returns a list of linked config names
+          schema:
+            type: array
+            items:
+              type: string
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.extraction_controller"
+
+  /stores/{store_name}/bags:
+    get:
+      tags:
+        - basic
+      summary: List bags in store
+      operationId: list_bags
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+
+        # Pagination
+        - name: limit
+          in: query
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+
+        # Ordering
+        - name: ordering
+          in: query
+          required: false
+          type: string
+
+        # Filtering
+        - name: discovered_gte
+          in: query
+          required: false
+          type: string
+          format: 'date-time'
+        - name: discovered_lte
+          in: query
+          required: false
+          type: string
+          format: 'date-time'
+
+        - name: start_time_gte
+          in: query
+          required: false
+          type: string
+          format: 'date-time'
+        - name: start_time_lte
+          in: query
+          required: false
+          type: string
+          format: 'date-time'
+
+        - name: end_time_gte
+          in: query
+          required: false
+          type: string
+          format: 'date-time'
+        - name: end_time_lte
+          in: query
+          required: false
+          type: string
+          format: 'date-time'
+
+        - name: duration_gte
+          in: query
+          required: false
+          type: number
+        - name: duration_lte
+          in: query
+          required: false
+          type: number
+
+        - name: meta_available
+          in: query
+          required: false
+          type: boolean
+        - name: is_extracted
+          in: query
+          required: false
+          type: boolean
+        - name: name
+          in: query
+          required: false
+          type: string
+        - name: tags
+          in: query
+          required: false
+          type: string
+        - name: in_trash
+          in: query
+          required: false
+          type: boolean
+
+      responses:
+        '200':
+          description: Returns a list of bags
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BagSummary'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Store not found
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /stores/{store_name}/bags/{bag_name}:
+    get:
+      tags:
+        - basic
+      summary: Get rosbag
+      operationId: get_bag_file
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Raw binary data
+          schema:
+            type: string
+            format: binary
+        '302':
+          description: Location of raw binary data
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: File not found
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /stores/{store_name}/bags/{bag_name}/meta:
+    get:
+      tags:
+        - basic
+      summary: List products from bag
+      operationId: get_bag_meta
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns the full information about the bag
+          schema:
+            $ref: "#/definitions/BagDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: bag not found
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+    put:
+      tags:
+        - basic
+      summary: Create/update bag information
+      operationId: put_bag_meta
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+        - name: trigger
+          in: query
+          description: Hooks to trigger
+          required: false
+          type: string
+        - name: bag
+          in: body
+          description: Bag to register
+          required: true
+          schema:
+            $ref: '#/definitions/BagDetailed'
+      responses:
+        '200':
+          description: Returns the full information about the bag
+          schema:
+            $ref: "#/definitions/BagDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+    patch:
+      tags:
+        - basic
+      summary: Partial update of bag information (this only supports a few fields)
+      operationId: patch_bag_meta
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+        - name: trigger
+          in: query
+          description: Hooks to trigger
+          required: false
+          type: string
+        - name: bag
+          in: body
+          description: Bag to register
+          required: true
+          schema:
+           type: object
+      responses:
+        '200':
+          description: Returns the full information about the bag
+          schema:
+            $ref: "#/definitions/BagDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /stores/{store_name}/bags/{bag_name}/tags:
+    get:
+      tags:
+        - basic
+      summary: List tag from bag
+      operationId: get_bag_tags
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns the tags
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tag'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: bag not found
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+    put:
+      tags:
+        - basic
+      summary: Change bag tags
+      operationId: put_bag_tags
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+        - name: auto_create
+          required: false
+          description: Create non existing tags
+          type: boolean
+          in: query
+        - name: tags
+          in: body
+          description: List of tags
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Returns the tags
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tag'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /stores/{store_name}/bags/{bag_name}/comments:
+    get:
+      tags:
+        - basic
+      summary: List comments from bag
+      operationId: get_bag_comments
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns the comments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Comment'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: bag not found
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+    post:
+      tags:
+        - basic
+      summary: New bag comment
+      operationId: new_bag_comment
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+        - name: comment
+          in: body
+          description: Comment
+          required: true
+          schema:
+            $ref: '#/definitions/Comment'
+      responses:
+        '200':
+          description: Posted comment
+          schema:
+            $ref: '#/definitions/Comment'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /stores/{store_name}/bags/{bag_name}/comments/{comment_id}:
+    delete:
+      tags:
+        - basic
+      summary: Delete a comment
+      operationId: delete_bag_comment
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: bag_name
+          in: path
+          description: Name of the bag
+          required: true
+          type: string
+        - name: comment_id
+          in: path
+          description: Comment identifier
+          required: true
+          type: integer
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.bag_controller"
+
+  /file-storage:
+    get:
+      tags:
+        - basic
+      summary: List available file stores
+      operationId: list_file_stores
+      responses:
+        '200':
+          description: Returns an array of file stores.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/FileStore'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+
+  /file-storage/{store_name}/authorize/{step}:
+    get:
+      tags:
+        - basic
+      summary: Authorization step forwarded to storage plugin
+      operationId: authorize_step_get
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: step
+          in: path
+          description: Step of the authorization procedure
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Unsupported
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+    post:
+      tags:
+        - basic
+      summary: Authorization step forwarded to storage plugin
+      operationId: authorize_step_post
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: step
+          in: path
+          description: Step of the authorization procedure
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Unsupported
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+
+  /file-storage/{store_name}:
+    get:
+      tags:
+        - basic
+      summary: Get store details
+      operationId: get_file_store
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns information about the store
+          schema:
+            $ref: "#/definitions/FileStore"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Store not found
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+    post:
+      tags:
+        - basic
+      summary: Register new file
+      operationId: new_file
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: file
+          in: body
+          description: The file metadata
+          required: true
+          schema:
+            $ref: '#/definitions/FileDetailed'
+      responses:
+        '201':
+          description: File created
+          schema:
+            $ref: "#/definitions/FileDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Store not found
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+    put:
+      tags:
+        - basic
+      summary: Create/update store
+      operationId: put_file_store
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: block_on_existing
+          in: query
+          description: Only create a new one, block if one already exists
+          required: false
+          type: boolean
+        - name: store
+          in: body
+          description: Store information
+          required: true
+          schema:
+            $ref: '#/definitions/FileStore'
+      responses:
+        '200':
+          description: Returns the store information
+          schema:
+            $ref: "#/definitions/FileStore"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+    delete:
+      tags:
+        - basic
+      summary: Delete file store
+      operationId: delete_file_store
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Succesfully deleted.
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+
+  /file-storage/{store_name}/{uid}/{file_name}/meta:
+    get:
+      tags:
+        - basic
+      summary: Get file meta data
+      operationId: get_file_meta
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: uid
+          in: path
+          description: Unique identifier of the file
+          required: true
+          type: integer
+        - name: file_name
+          in: path
+          description: Name of the file
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns information about the file
+          schema:
+            $ref: "#/definitions/FileDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: File not found
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+
+  /file-storage/{store_name}/{uid}/{file_name}:
+    get:
+      tags:
+        - basic
+      summary: Get file
+      operationId: get_file
+      parameters:
+        - name: store_name
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: uid
+          in: path
+          description: Unique identifier of the file
+          required: true
+          type: integer
+        - name: file_name
+          in: path
+          description: Name of the file
+          required: true
+          type: string
+        - name: no_redirect
+          in: query
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: Raw binary data
+          schema:
+            type: string
+            format: binary
+        '204':
+          description: "Content is somewhere else, follow the location header (no_redirect=true)"
+        '302':
+          description: Location of raw binary data
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: File not found
+      x-swagger-router-controller: "rbb_server.controllers.file_controller"
+
+  /users/me:
+    get:
+      tags:
+        - basic
+      summary: Get current user information
+      operationId: get_current_user
+      responses:
+        '200':
+          description: User information
+          schema:
+            $ref: "#/definitions/User"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.user_controller"
+    put:
+      tags:
+        - basic
+      summary: Change current user information
+      operationId: put_current_user
+      parameters:
+        - name: user
+          in: body
+          description: The user information
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: User information
+          schema:
+            $ref: "#/definitions/User"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.user_controller"
+
+  /users/account:
+    get:
+      tags:
+        - basic
+      summary: List user acounts
+      operationId: list_user_accounts
+      responses:
+        '200':
+          description: Returns an array of user accounts.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.user_controller"
+
+  /users/account/{alias}:
+    get:
+      tags:
+        - basic
+      summary: Get user information
+      operationId: get_user_account
+      parameters:
+        - name: alias
+          in: path
+          description: Alias of the user
+          required: true
+          type: string
+      responses:
+        '200':
+          description: User information
+          schema:
+            $ref: "#/definitions/User"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.user_controller"
+    put:
+      tags:
+        - basic
+      summary: Change user information
+      operationId: put_user_account
+      parameters:
+        - name: alias
+          in: path
+          description: Alias of the user
+          required: true
+          type: string
+        - name: block_on_existing
+          in: query
+          description: Only create a new one, block if one already exists
+          required: false
+          type: boolean
+        - name: user
+          in: body
+          description: The user information
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: User information
+          schema:
+            $ref: "#/definitions/User"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.user_controller"
+    delete:
+      tags:
+        - basic
+      summary: Delete user account
+      parameters:
+        - name: alias
+          in: path
+          description: Alias of the user
+          required: true
+          type: string
+      operationId: delete_user_account
+      responses:
+        '204':
+          description: Succesfully deleted.
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.user_controller"
+
+  /sessions:
+    get:
+      tags:
+        - basic
+      summary: List current session
+      operationId: list_sessions
+      responses:
+        '200':
+          description: Returns an array of current user sessions.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Session'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.session_controller"
+    post:
+      tags:
+        - basic
+      summary: Create a new session
+      operationId: new_session
+      parameters:
+        - name: valid_for
+          in: query
+          description: Validity in seconds
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: Information of the new session and corresponding token
+          schema:
+            $ref: "#/definitions/Session"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.session_controller"
+
+
+  /sessions/{session_id}:
+    delete:
+      tags:
+        - basic
+      summary: Delete a session or sessions
+      parameters:
+        - name: session_id
+          in: path
+          description: Session id or all or current
+          required: true
+          type: string
+      operationId: delete_session
+      responses:
+        '204':
+          description: Session(s) succesfully deleted.
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.session_controller"
+
+  /queue:
+    get:
+      tags:
+        - basic
+      summary: List task queue
+      operationId: list_queue
+      parameters:
+        # Pagination
+        - name: limit
+          in: query
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+
+        # Ordering
+        - name: ordering
+          in: query
+          required: false
+          type: string
+
+        # Filtering
+        - name: running
+          description: Include running tasks, default is true
+          in: query
+          required: false
+          type: string
+        - name: finished
+          description: Include finished tasks, default is true
+          in: query
+          required: false
+          type: string
+        - name: queued
+          description: Include queued tasks, default is true
+          in: query
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Returns an array of tasks.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TaskSummary'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.queue_controller"
+    post:
+      tags:
+        - basic
+      summary: Create a new task
+      operationId: new_task
+      parameters:
+        - name: task
+          in: body
+          description: The task
+          required: true
+          schema:
+            $ref: '#/definitions/TaskDetailed'
+      responses:
+        '200':
+          description: The new task
+          schema:
+            $ref: "#/definitions/TaskDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.queue_controller"
+
+  /queue/dequeue:
+    post:
+      tags:
+        - basic
+      summary: Take a task from the queue
+      operationId: dequeue_task
+      parameters:
+        - name: worker_name
+          in: query
+          description: Name of the worker trying to acquire a task
+          required: true
+          type: string
+        - name: tasks
+          in: query
+          description: Tasks that the worker can do (any or a list of tasks)
+          required: true
+          type: string
+        - name: labels
+          in: query
+          description: Labels the worker wants to do
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The task
+          schema:
+            $ref: "#/definitions/TaskDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.queue_controller"
+
+  /queue/{task_identifier}:
+    get:
+      tags:
+        - basic
+      summary: Take a task from the queue
+      operationId: get_task
+      parameters:
+        - name: task_identifier
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The task
+          schema:
+            $ref: "#/definitions/TaskDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.queue_controller"
+    put:
+      tags:
+        - basic
+      summary: Update a task
+      operationId: put_task
+      parameters:
+        - name: task_identifier
+          in: path
+          required: true
+          type: string
+        - name: task
+          in: body
+          description: The task
+          required: true
+          schema:
+            $ref: '#/definitions/TaskDetailed'
+      responses:
+        '200':
+          description: The updated task
+          schema:
+            $ref: "#/definitions/TaskDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.queue_controller"
+    patch:
+      tags:
+        - basic
+      summary: Partial update of task (this only supports a few fields)
+      operationId: patch_task
+      parameters:
+        - name: task_identifier
+          in: path
+          required: true
+          type: string
+        - name: task
+          in: body
+          description: Fields to update
+          required: true
+          schema:
+           type: object
+      responses:
+        '200':
+          description: Returns the task information
+          schema:
+            $ref: "#/definitions/TaskDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.queue_controller"
+    post:
+      tags:
+        - basic
+      summary: Perform an action on the task
+      operationId: do_task_action
+      parameters:
+        - name: task_identifier
+          in: path
+          required: true
+          type: string
+        - name: action
+          in: query
+          description: Action to perform (cancel/prio_up)
+          required: true
+          type: string
+        - name: task
+          in: body
+          description: The task, required depending on the action
+          schema:
+            $ref: '#/definitions/TaskDetailed'
+      responses:
+        '200':
+          description: The updated task
+          schema:
+            $ref: "#/definitions/TaskDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.queue_controller"
+
+  /simulation-environments:
+    get:
+      tags:
+        - basic
+      summary: List available simulation environments
+      operationId: list_simulation_environments
+      responses:
+        '200':
+          description: Returns an array of simulation environments.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SimulationEnvironmentSummary'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+
+  /simulation-environments/{env_name}:
+    get:
+      tags:
+        - basic
+      summary: Get simulation environment
+      operationId: get_simulation_environment
+      parameters:
+        - name: env_name
+          in: path
+          description: Name of the simulation environment
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Returns the simulation environment infomration
+          schema:
+            $ref: "#/definitions/SimulationEnvironmentDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Simulation environment not found
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+    put:
+      tags:
+        - basic
+      summary: Create/update a simulation environment
+      operationId: put_simulation_environment
+      parameters:
+        - name: env_name
+          in: path
+          description: Name of the simulation environment
+          required: true
+          type: string
+        - name: block_on_existing
+          in: query
+          description: Only create a new one, block if one already exists
+          required: false
+          type: boolean
+        - name: environment
+          in: body
+          description: Simulation environment
+          required: true
+          schema:
+            $ref: '#/definitions/SimulationEnvironmentDetailed'
+      responses:
+        '200':
+          description: Returns the simulation environment
+          schema:
+            $ref: "#/definitions/SimulationEnvironmentDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+    delete:
+      tags:
+        - basic
+      summary: Delete simulation
+      operationId: delete_simulation_environment
+      parameters:
+        - name: env_name
+          in: path
+          description: Name of the simulation environment
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Succesfully deleted.
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+
+  /simulations:
+    get:
+      tags:
+        - basic
+      summary: List simulations
+      operationId: list_simulations
+      parameters:
+        # Pagination
+        - name: limit
+          in: query
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+
+        # Ordering
+        - name: ordering
+          in: query
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Returns the simulations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SimulationSummary'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+    post:
+      tags:
+        - basic
+      summary: New simulation
+      operationId: new_simulation
+      parameters:
+        - name: trigger
+          in: query
+          description: Hooks to trigger
+          required: false
+          type: string
+        - name: simulation
+          in: body
+          description: Simulation
+          required: true
+          schema:
+            $ref: '#/definitions/SimulationDetailed'
+      responses:
+        '200':
+          description: Returns the simulation
+          schema:
+            $ref: "#/definitions/SimulationDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+
+  /simulations/{sim_identifier}:
+    get:
+      tags:
+        - basic
+      summary: Get simulation
+      operationId: get_simulation
+      parameters:
+        - name: sim_identifier
+          in: path
+          required: true
+          type: integer
+        - name: expand
+          in: query
+          type: boolean
+      responses:
+        '200':
+          description: Returns the simulation information
+          schema:
+            $ref: "#/definitions/SimulationDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Simulation not found
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+    put:
+      tags:
+        - basic
+      summary: Update a simulation
+      operationId: put_simulation
+      parameters:
+        - name: sim_identifier
+          in: path
+          required: true
+          type: integer
+        - name: simulation
+          in: body
+          description: Simulation
+          required: true
+          schema:
+            $ref: '#/definitions/SimulationDetailed'
+      responses:
+        '200':
+          description: Returns the simulation
+          schema:
+            $ref: "#/definitions/SimulationDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Simulation not found
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+    delete:
+      tags:
+        - basic
+      summary: Delete simulation
+      operationId: delete_simulation
+      parameters:
+        - name: sim_identifier
+          in: path
+          required: true
+          type: integer
+      responses:
+        '204':
+          description: Succesfully deleted.
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+
+  /simulations/{sim_identifier}/runs:
+    get:
+      tags:
+        - basic
+      summary: List simulation runs
+      operationId: list_simulation_runs
+      parameters:
+        - name: sim_identifier
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Returns the simulation runs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SimulationRunSummary'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Simulation not found
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+    post:
+      tags:
+        - basic
+      summary: New simulation run
+      operationId: new_simulation_run
+      parameters:
+        - name: sim_identifier
+          in: path
+          required: true
+          type: integer
+        - name: simulation_run
+          in: body
+          description: Simulation run
+          required: true
+          schema:
+            $ref: '#/definitions/SimulationRunDetailed'
+      responses:
+        '200':
+          description: Returns the simulation run
+          schema:
+            $ref: "#/definitions/SimulationRunDetailed"
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Simulation not found
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+
+  /simulations/{sim_identifier}/runs/{run_identifier}:
+    get:
+      tags:
+        - basic
+      summary: Get simulation run
+      operationId: get_simulation_run
+      parameters:
+        - name: sim_identifier
+          in: path
+          required: true
+          type: integer
+        - name: run_identifier
+          in: path
+          required: true
+          type: integer
+        - name: expand
+          in: query
+          type: boolean
+      responses:
+        '200':
+          description: Returns the simulation run
+          schema:
+            $ref: '#/definitions/SimulationRunDetailed'
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Simulation or run not found
+      x-swagger-router-controller: "rbb_server.controllers.simulation_controller"
+
+  /configuration/{config_key}:
+    get:
+      tags:
+        - basic
+      summary: Get configuration key
+      operationId: get_configuration_key
+      parameters:
+        - name: config_key
+          in: path
+          description: Configuration keys to read, * is all
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Configuration value
+          schema:
+            type: object
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+        '404':
+          description: Configuration key not found
+      x-swagger-router-controller: "rbb_server.controllers.configuration_controller"
+    put:
+      tags:
+        - basic
+      summary: Write configuration key
+      operationId: put_configuration_key
+      parameters:
+        - name: config_key
+          in: path
+          description: Configuration key to read
+          required: true
+          type: string
+        - name: config_value
+          in: body
+          description: Configuration keys
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Write successfull
+        '400':
+          description: General error
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.configuration_controller"
+
+  /cron:
+    get:
+      tags:
+        - basic
+      summary: Endpoint that should be periodically triggered
+      operationId: get_cron_endpoint
+      parameters:
+        - name: jobs
+          in: query
+          description: Specific cron jobs to trigger
+          required: false
+          type: string
+      responses:
+        '204':
+          description: Nothing
+        '400':
+          description: General error, only in debug mode
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "rbb_server.controllers.cron_controller"
+
+definitions:
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+
+  User:
+    type: object
+    properties:
+      alias:
+        type: string
+        example: 'johndoe'
+      full_name:
+        type: string
+        example: 'John Doe'
+      email:
+        type: string
+        example: 'John@Doe.com'
+      permissions:
+        type: array
+        items:
+          $ref: '#/definitions/Permission'
+      password:
+        type: string
+        example: 'my-password'
+        description: Only set for changing password, otherwise empty.
+
+  Session:
+    type: object
+    properties:
+      created:
+        type: string
+        format: 'date-time'
+        description: Start time of this bag.
+      id:
+        type: integer
+        format: int32
+      token:
+        type: string
+        example: 'UJF9e8jwjfsf'
+        description: Only set on initial creation of a session
+
+  BagStoreSummary:
+    type: object
+    discriminator: detail_type
+    properties:
+      detail_type:
+        type: string
+        example: 'BagStoreDetailed'
+      name:
+        type: string
+        example: my-dropbox
+    required:
+      - detail_type
+      - name
+
+  BagStoreDetailed:
+    allOf:
+      - $ref: '#/definitions/BagStoreSummary'
+      - type: object
+        properties:
+          description:
+            type: string
+            description: More information about this store.
+            example: Bags from physical testing
+          store_type:
+            type: string
+            description: Type of store.
+            example: dropbox
+          store_data:
+            type: object
+            description: Data that is specific to the store type.
+          created:
+            type: string
+            format: 'date-time'
+            description: Date and time this store was added to the bazaar.
+          default_file_store:
+            type: string
+            description: Name of the default file store (empty if no default store)
+        required:
+          - description
+          - store_data
+          - store_type
+          - created
+          - default_file_store
+
+  BagSummary:
+    type: object
+    discriminator: detail_type
+    properties:
+      detail_type:
+        type: string
+        example: 'BagSummary'
+      name:
+        type: string
+        example: test-2017-11-11.bag
+      store_data:
+        type: object
+        description: Data that is specific to the bag store type.
+      discovered:
+        type: string
+        format: 'date-time'
+        description: Date and time this bag was discovered.
+      extraction_failure:
+        type: boolean
+        description: True if the extraction failed
+      in_trash:
+        type: boolean
+        description: True if the bag is in the trash bin.
+      is_extracted:
+        type: boolean
+        description: True if data is extracted from this bag.
+      meta_available:
+        type: boolean
+        description: True if meta data is known for this bag.
+      size:
+        type: integer
+        format: int64
+        description: Size of the bag in bytes.
+      start_time:
+        type: string
+        format: 'date-time'
+        description: Start time of this bag.
+      end_time:
+        type: string
+        format: 'date-time'
+        description: Start time of this bag.
+      duration:
+        type: number
+        description: duration of this bag in seconds.
+      messages:
+        type: integer
+        format: int64
+        description: Number of messages in this bag.
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/Tag'
+    required:
+      - detail_type
+      - name
+      - store_data
+      - discovered
+      - is_extracted
+      - meta_available
+
+  BagDetailed:
+    allOf:
+      - $ref: '#/definitions/BagSummary'
+      - type: object
+        properties:
+          topics:
+            type: array
+            items:
+              $ref: '#/definitions/Topic'
+          products:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+          comment:
+            type: string
+            description: Manual comment on the bag.
+        required:
+          - topics
+          - products
+          - comment
+
+  Topic:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the topic
+        example: /cam0/raw
+      msg_type:
+        type: string
+        description: Message type of the topic
+        example: std_msgs/Int16
+      msg_type_hash:
+        type: string
+        description: Hash identifier of the message type
+        example: hash...
+      msg_definition:
+        type: string
+        description: Definition of custom messages.
+      msg_count:
+        type: integer
+        description: Number of messages in this topic.
+      avg_frequency:
+        type: number
+        format: float
+        description: Average publishing frequency
+    required:
+      - name
+      - msg_type
+      - msg_type_hash
+      - msg_count
+      - avg_frequency
+
+  Product:
+    type: object
+    properties:
+      uid:
+        type: string
+        example: Unique id for the product
+      plugin:
+        type: string
+        description: Plugin that created this product
+        example: RvizRecorder
+      product_type:
+        type: string
+        description: Type of product
+        example: videos
+      product_data:
+        type: object
+        description: Product data
+      created:
+        type: string
+        format: 'date-time'
+        description: Date and time this product was created.
+      title:
+        type: string
+        description: Some descriptive title
+        example: RViz point cloud top view
+      configuration_tag:
+        type: string
+        description: Tag of the configuration file that generated this product
+        example: default-config
+      configuration_rule:
+        type: string
+        description: Name of the rule that generated this product
+        example: rviz-point-cloud
+      topics:
+        type: array
+        items:
+          $ref: '#/definitions/TopicMapping'
+      files:
+        type: array
+        items:
+          $ref: '#/definitions/ProductFile'
+    required:
+      - uid
+      - plugin
+      - product_type
+      - product_data
+      - created
+      - topics
+      - files
+
+  ProductFile:
+    type: object
+    properties:
+      key:
+        type: string
+        description: Key that links the file to the product
+      file:
+        $ref: '#/definitions/FileSummary'
+
+  TopicMapping:
+    type: object
+    properties:
+      original_topic:
+        type: string
+        description: The name of the original topic
+      plugin_topic:
+        type: string
+        description: Plugin topic name
+    required:
+      - original_topic
+      - plugin_topic
+
+  FileStore:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the store
+        example: google-cloud-1
+      store_type:
+        type: string
+        description: Type of store.
+        example: dropbox
+      store_data:
+        type: object
+        description: Data that is specific to the store type.
+      created:
+        type: string
+        format: 'date-time'
+        description: Date and time this store was added to the bazaar.
+    required:
+      - name
+      - store_data
+      - store_type
+      - created
+
+  FileSummary:
+    type: object
+    discriminator: detail_type
+    properties:
+      detail_type:
+        type: string
+        example: 'FileSummary'
+      store_name:
+        type: string
+        description: Name of the file store
+        example: 'dropbox'
+      uid:
+        type: integer
+        description: Unique file id
+        example: 323492
+      name:
+        type: string
+        description: Name of the file
+        example: 'test.mp4'
+      link:
+        type: string
+        example: 'http://localhost/api/v0/files/989/test.mp4'
+    required:
+      - detail_type
+      - store_name
+      - name
+
+  FileDetailed:
+    allOf:
+      - $ref: '#/definitions/FileSummary'
+      - type: object
+        properties:
+          store_data:
+            type: object
+            description: Store specific data
+        required:
+          - store_data
+
+  BagExtractionConfiguration:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the configuration
+        example: default-config
+      description:
+        type: string
+        description: Description of this configuration
+      type:
+        type: string
+        description: Type of the configuration. (only git is supported now)
+        example: git
+      config:
+        type: object
+        description: Data that is specific to the configuration type.
+    required:
+      - name
+      - description
+      - type
+      - config
+
+  TaskSummary:
+    type: object
+    discriminator: detail_type
+    properties:
+      detail_type:
+        type: string
+        example: 'TaskSummary'
+      identifier:
+        type: string
+        example: '1'
+      priority:
+        type: number
+        example: 1000
+      description:
+        type: string
+        description: Simple description to identify the type of task
+      assigned_to:
+        type: string
+        description: Name of worker assigned to the task.
+      created:
+        type: string
+        format: 'date-time'
+        description: Date the task was added to the queue.
+      last_updated:
+        type: string
+        format: 'date-time'
+        description: Date the task was updated to the queue.
+      state:
+        type: integer
+        description: State of the task.
+      task:
+        type: string
+        description: The task.
+      success:
+        type: boolean
+      runtime:
+        type: number
+      worker_labels:
+        type: string
+        description: Worker that can take this task.
+    required:
+      - detail_type
+      - identifier
+      - priority
+      - description
+      - assigned_to
+      - created
+      - state
+      - task
+      - success
+      - runtime
+      - worker_labels
+      - last_updated
+
+  TaskDetailed:
+    allOf:
+      - $ref: '#/definitions/TaskSummary'
+      - type: object
+        properties:
+          config:
+            type: object
+            description: Configuration of the task.
+          result:
+            type: object
+            description: Result of the task
+          log:
+            type: string
+            description: Standard output of the task
+        required:
+          - topics
+          - products
+          - comment
+
+  Tag:
+    type: object
+    properties:
+      tag:
+        type: string
+        example: 'good'
+      color:
+        type: string
+        example: '#FF0000'
+    required:
+      - tag
+      - color
+
+  SimulationEnvironmentSummary:
+    type: object
+    discriminator: detail_type
+    properties:
+      detail_type:
+        type: string
+        example: 'SimulationEnvironmentSummary'
+      name:
+        type: string
+        example: "2018-repo-simulation"
+      module_name:
+        type: string
+        example: "rbb_tools.simenvs.scse"
+      rosbag_store:
+        type: string
+        example: "s3-sim-bags"
+    required:
+      - detail_type
+      - name
+      - module_name
+
+  SimulationEnvironmentDetailed:
+    allOf:
+      - $ref: '#/definitions/SimulationEnvironmentSummary'
+      - type: object
+        properties:
+          config:
+            type: object
+            description: Configuration of the simulation environment.
+          example_config:
+            type: string
+            description: Example simulation configuration shown in the simulation overview
+        required:
+          - config
+          - example_config
+
+  SimulationSummary:
+    type: object
+    discriminator: detail_type
+    properties:
+      detail_type:
+        type: string
+        example: 'SimulationSummary'
+      identifier:
+        type: integer
+        example: 1
+      description:
+        type: string
+        example: "Pull request #12, commit id a3458de90f9"
+      created:
+        type: string
+        format: 'date-time'
+      result:
+        type: integer
+        description: 0 is scheduled, -1 is prep failed, -100 is sim failed, 100 is sim succeeded
+      environment_name:
+        type: string
+        description: Name of the simulation environment
+      queued_task_identifier:
+        type: string
+        description: Identifier of the task associated to this simulation
+      queued_task_state:
+        type: integer
+        description: Read only value, taken from associated task
+    required:
+      - detail_type
+      - identifier
+      - created
+      - result
+      - environment_name
+
+  SimulationDetailed:
+    allOf:
+      - $ref: '#/definitions/SimulationSummary'
+      - type: object
+        properties:
+          config:
+            type: object
+            description: Configuration of the simulation.
+          on_complete_action:
+            type: object
+            description: Action to take when simulation completes.
+          environment:
+            $ref: '#/definitions/SimulationEnvironmentDetailed'
+            description: Read only value, expanded on request.
+          runs:
+            description: Read only value, expanded on request.
+            type: array
+            items:
+              $ref: '#/definitions/SimulationRunDetailed'
+          queued_task:
+            $ref: '#/definitions/TaskDetailed'
+            description: Read only value, expanded on request.
+        required:
+          - config
+
+  SimulationRunSummary:
+    type: object
+    discriminator: detail_type
+    properties:
+      detail_type:
+        type: string
+        example: 'SimulationRunSummary'
+      identifier:
+        type: integer
+        example: 1
+      success:
+        type: boolean
+      description:
+        type: string
+        example: "simple-loop"
+      duration:
+        type: number
+        example: 10.0
+      bag_name:
+        type: string
+        example: "sim/10/simple-loop.bag"
+      bag_store_name:
+        type: string
+    required:
+      - detail_type
+      - identifier
+      - success
+      - description
+      - duration
+
+  SimulationRunDetailed:
+    allOf:
+      - $ref: '#/definitions/SimulationRunSummary'
+      - type: object
+        properties:
+          results:
+            type: object
+            description: Configuration of the simulation.
+          bag:
+            $ref: '#/definitions/BagSummary'
+            description: Read only value, expanded on request.
+        required:
+          - results
+
+  Comment:
+    type: object
+    properties:
+      identifier:
+        type: integer
+        example: 1
+      comment_text:
+        type: string
+      created:
+        type: string
+        format: 'date-time'
+      posted_by:
+        $ref: '#/definitions/User'
+    required:
+      - identifier
+      - comment_text
+      - created
+
+  Permission:
+    type: object
+    properties:
+      identifier:
+        type: string
+      name:
+        type: string
+      granted:
+        type: boolean
+    required:
+      - identifier
+      - name

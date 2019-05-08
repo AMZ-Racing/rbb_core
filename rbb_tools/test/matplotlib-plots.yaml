@@ -1,0 +1,208 @@
+title: "Matplotlib Test"
+tag: "matplotlib"
+description: ""
+author: ""
+rules:
+  matplotlib-test-rule:
+    plugin: "rbb_tools.plugins.matplotlib_plotter"
+    config:
+      data:
+        # ASS data
+        - name: "ass_velocity_long"
+          type: "raw"
+          topic: "/ass/measurement.longitudinal_velocity"
+        - name: "ass_velocity_trans"
+          type: "raw"
+          topic: "/ass/measurement.transversal_velocity"
+        - name: "ass_velocity_abs"
+          type: "raw"
+          topic: "/ass/measurement.absolute_velocity"
+
+        # SLAM Pose
+        - name: "slam_time"
+          type: "rostime"
+          topic: "/slam/pose.header.stamp"
+        - name: "slam_x"
+          type: "raw"
+          topic: "/slam/pose.pose.x"
+        - name: "slam_y"
+          type: "raw"
+          topic: "/slam/pose.pose.y"
+
+        # GPS
+        - name: "gps_x"
+          type: "raw"
+          topic: "/gps/pose.point.x"
+        - name: "gps_y"
+          type: "raw"
+          topic: "/gps/pose.point.y"
+
+        # Localizer pose
+        - name: "localizer_x"
+          type: "raw"
+          topic: "/localizer/pose.pose.x"
+        - name: "localizer_y"
+          type: "raw"
+          topic: "/localizer/pose.pose.y"
+
+        # MPC Timings
+        - name: "mpc_solvetime_lbnmpcc"
+          type: "raw"
+          topic: "/lbnmpcc/solver_info.solvetime"
+        - name: "mpc_fevalstime_lbnmpcc"
+          type: "raw"
+          topic: "/lbnmpcc/solver_info.fevalstime"
+        - name: "mpc_solvetime_nppcc"
+          type: "raw"
+          topic: "/nmpcc/mpc_logger.solvetime"
+
+        # Accelerations
+        - name: "accel_x"
+          type: "raw"
+          topic: "/imu/accelerometer.point.x"
+        - name: "accel_y"
+          type: "raw"
+          topic: "/imu/accelerometer.point.y"
+
+      figures:
+#        color-bar-test:
+#          title: "SLAM Pose (time color)"
+#          xlabel: "X"
+#          ylabel: "Y"
+#          aspect: "equal"
+#          legend: "best"
+#          width: 1000
+#          height: 1000
+#          colorbar: true
+#          plots:
+#            - type: "scatterplot"
+#              x: "slam_x"
+#              y: "slam_y"
+#              color: "slam_time"
+#              kwargs:
+#                cmap: "viridis"
+#                label: "SLAM Pose"
+#
+#        slam-pose:
+#          title: "SLAM Pose"
+#          xlabel: "X"
+#          ylabel: "Y"
+#          aspect: "equal"
+#          width: 2000
+#          height: 2000
+#          plots:
+#            - type: "lineplot"
+#              x: "slam_x"
+#              y: "slam_y"
+#              kwargs:
+#                label: "SLAM Pose"
+#
+#        localizer-pose:
+#          title: "Localizer Pose"
+#          xlabel: "X"
+#          ylabel: "Y"
+#          aspect: "equal"
+#          width: 2000
+#          height: 2000
+#          plots:
+#            - type: "lineplot"
+#              x: "localizer_x"
+#              y: "localizer_y"
+#              kwargs:
+#                label: "Localizer Pose"
+#
+#        slam-and-localizer-pose:
+#          title: "SLAM and Localizer Pose"
+#          xlabel: "X"
+#          ylabel: "Y"
+#          aspect: "equal"
+#          legend: "best"
+#          width: 2000
+#          height: 2000
+#          plots:
+#            - type: "lineplot"
+#              x: "localizer_x"
+#              y: "localizer_y"
+#              kwargs:
+#                label: "Localizer Pose"
+#            - type: "lineplot"
+#              x: "slam_x"
+#              y: "slam_y"
+#              kwargs:
+#                label: "SLAM Pose"
+#
+#        gps-pose:
+#          title: "GPS Pose"
+#          xlabel: "X"
+#          ylabel: "Y"
+#          aspect: "equal"
+#          width: 2000
+#          height: 2000
+#          plots:
+#            - type: "lineplot"
+#              x: "gps_x"
+#              y: "gps_y"
+#              kwargs:
+#                label: "GPS Pose"
+
+        ass-speed-plot:
+          title: "Absolute Speed Sensor"
+          xlabel: "Transversal Velocity"
+          ylabel: "Longitudinal Velocity"
+          width: 1000
+          height: 1000
+          colorbar: true
+          plots:
+            - type: "scatterplot"
+              x: "ass_velocity_trans"
+              y: "ass_velocity_long"
+              color: "ass_velocity_abs"
+              kwargs:
+                cmap: "jet"
+
+#        mpc-solve-time-nmpcc:
+#          title: "MPC Solvetime (/nmpcc)"
+#          xlabel: "Time"
+#          width: 1000
+#          height: 500
+#          plots:
+#            - type: "histogram"
+#              x: "mpc_solvetime_nmpcc"
+#              bins: 100
+#
+#        mpc-solve-time-lbnmpcc:
+#          title: "MPC Solvetime (/lbnmpcc)"
+#          xlabel: "Time"
+#          width: 1000
+#          height: 500
+#          plots:
+#            - type: "histogram"
+#              x: "mpc_solvetime_lbnmpcc"
+#              bins: 100
+#
+#        mpc-fevals-time-lbnmpcc:
+#          title: "MPC F eval time (/lbnmpcc)"
+#          xlabel: "Time"
+#          width: 1000
+#          height: 500
+#          plots:
+#            - type: "histogram"
+#              x: "mpc_fevalstime_lbnmpcc"
+#              bins: 100
+#
+#        accelerations:
+#          title: "Accelerations (unfiltered)"
+#          xlabel: "Transversal Acceleration"
+#          xlabel: "Longitudinal Acceleration"
+#          width: 1000
+#          height: 1000
+#          plots:
+#            - type: "scatterplot"
+#              x: "accel_y"
+#              y: "accel_x"
+#              kwargs:
+#                alpha: 0.1
+
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.AllTopicsMatchingRule"
+        config:

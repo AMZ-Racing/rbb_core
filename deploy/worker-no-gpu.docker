@@ -1,0 +1,21 @@
+FROM ros:kinetic-ros-base-xenial
+MAINTAINER hhendrik@student.ethz.ch
+
+RUN apt-get update && apt-get upgrade -y && apt-get install ros-kinetic-desktop \
+mesa-utils llvm-dev \
+python-pip xserver-xephyr xvfb xdotool ffmpeg ssh-client -y \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./rbb_client /var/app/rbb_client
+COPY ./rbb_tools /var/app/rbb_tools
+COPY ./rbb_storage /var/app/rbb_storage
+
+RUN pip install -r /var/app/rbb_client/requirements.txt \
+     && pip install -r /var/app/rbb_tools/requirements.txt \
+     && pip install -r /var/app/rbb_storage/requirements.txt
+
+COPY ./deploy/worker-entrypoint.sh /run.sh
+RUN chmod +x /run.sh
+
+ENTRYPOINT ["/run.sh"]
+CMD ["--help"]

@@ -1,0 +1,8 @@
+connexion == 1.1.9
+python_dateutil == 2.6.0
+setuptools >= 21.0.0
+sqlalchemy >= 1.1.15
+psycopg2 >= 2.7.3
+flask-cors >= 3.0.0
+gunicorn >= 19.7.1
+pytz

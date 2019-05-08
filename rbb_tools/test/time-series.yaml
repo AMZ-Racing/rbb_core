@@ -1,0 +1,67 @@
+title: "Time Series Test"
+tag: "time-series"
+description: ""
+author: ""
+rules:
+  imu-data-set:
+    plugin: "rbb_tools.plugins.time_series"
+    config:
+      topics:
+        /ass/measurement:
+          # Sub sampling goes here
+          name: "ASS"
+          # Series are the message fields to record
+          series:
+            longitudinal_velocity:
+              label: "Longitudinal Velocity"
+              symbol: "V_l"
+              unit: "m/s"
+              format: "{0:.9g}"
+              default_color: "#FF0000"
+            transversal_velocity:
+              label: "Transveral Velocity"
+              symbol: "V_t"
+              unit: "m/s"
+              default_color: "#00FF00"
+        /imu/body_velocity:
+          # Sub sampling goes here
+          name: "IMU Body Velocity"
+          # Series are the message fields to record
+          series:
+            point.x:
+              label: "X Velocity"
+              symbol: "V_x"
+              unit: "m/s"
+              default_color: "#FF0000"
+            point.y:
+              label: "Y Velocity"
+              symbol: "V_y"
+              unit: "m/s"
+              default_color: "#00FF00"
+        /imu/gyroscope:
+          # Sub sampling goes here
+          name: "IMU Gyro"
+          # Series are the message fields to record
+          series:
+            point.x:
+              label: "X"
+              symbol: "V_x"
+              unit: "m/s"
+              default_color: "#FF0000"
+            point.y:
+              label: "Y"
+              symbol: "V_y"
+              unit: "m/s"
+              default_color: "#00FF00"
+            point.z:
+              label: "Z"
+              symbol: "V_y"
+              unit: "m/s"
+              default_color: "#0000FF"
+
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.ExactMatchingRule"
+        config:
+          topics:
+            /ass/measurement: "*"
+            /imu/body_velocity: "*"

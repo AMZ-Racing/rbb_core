@@ -1,0 +1,84 @@
+# Title of this configuration file
+title: "Standard test"
+# Tag that identifies this configuration file.
+#  This is used to replace earlier products coming from this config file
+#  in case this configuration is ran again and uploaded to the server.
+tag: "standard-test"
+# Description of this configuration file
+description: ""
+# Author of this configuration file
+author: ""
+
+# Definition of software stacks
+software:
+  autonomous-2018:
+    cached: False
+    download:
+      git:
+        url: dd
+        commit: dd
+    build: "catkin build xxx"
+    run:
+      slam:
+        command: "roslaunch xxx xxx"
+        delay: 1
+
+  lidar-assembler:
+    cached: True
+    download:
+      git:
+        url: 
+   
+# Extraction rules
+rules:
+  # Extraction rule
+  lidar-pointcloud:
+    # Plugin that is used for this extraction rule
+    plugin: "rbb_tools.plugins.rviz_recorder"
+    # Configuration specific to the plugin
+    config:
+      rviz_file: 'test.rviz'
+      width: 800
+      height: 600
+      logo: 'logo.png'
+      logo_x: 30
+      logo_y: 30
+      text_x: 200
+      text_y: 30
+      font: 'helvetica.ttf'
+    # Definition of topics to which this rule is applied
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.ExactMatchingRule"
+        config:
+          topics:
+            /velodyne_points: "sensor_msgs/PointCloud2"
+
+  # Extraction rule
+  slam-visualization:
+    # Plugin that is used for this extraction rule
+    plugin: "rbb_tools.plugins.rviz_recorder"
+    # Configuration specific to the plugin
+    config:
+      rviz_file: 'slam_color.rviz'
+      width: 1280
+      height: 1024
+      logo: 'logo.png'
+      logo_x: 30
+      logo_y: 30
+      text_x: 200
+      text_y: 30
+      font: 'helvetica.ttf'
+      splash_screen: 'grumpy-bug.png'
+    # Definition of topics to which this rule is applied
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.ExactMatchingRule"
+        config:
+          topics:
+            /slam/particle: "*"
+
+  topic-info:
+    plugin: "rbb_tools.plugins.detailed_topic_info"
+    config:
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.AllTopicsMatchingRule"
+        config:

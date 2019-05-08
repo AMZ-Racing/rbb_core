@@ -1,0 +1,4 @@
+generated/*
+!generated/README.md
+./swagger-codegen-cli-2.3.1.jar
+./swagger-codegen-cli-2.1.6.jar

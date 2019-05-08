@@ -1,0 +1,13 @@
+FROM python:3-jessie
+MAINTAINER hhendrik@student.ethz.ch
+
+RUN apt-get update || true
+RUN apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/*
+
+COPY ./rbb_server /var/app/rbb_server
+COPY ./rbb_storage /var/app/rbb_storage
+
+RUN pip install -r /var/app/rbb_server/requirements.txt
+RUN pip install -r /var/app/rbb_storage/requirements.txt
+
+CMD /var/app/rbb_server/run-server

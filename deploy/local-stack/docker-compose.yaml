@@ -1,0 +1,172 @@
+# AMZ-Driverless
+#  Copyright (c) 2019 Authors:
+#   - Huub Hendrikx <hhendrik@ethz.ch>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+#################################################
+# THIS IS A DEBUG STACK, ALL PORTS ARE EXPOSED! #
+#################################################
+
+version: '2.4'
+services:
+
+  postgres:
+    image: postgres:9.6
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: testtest
+    ports:
+      - 5555:5432
+    volumes:
+      - ./../../rbb_server/src/rbb_server/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/20-data.sql
+    networks:
+      default:
+        aliases:
+          - db.ats.localhost
+
+  rbb-web:
+    image: amzracing/rbb-web
+    restart: always
+    ports:
+      - 8001:80
+    networks:
+      default:
+        aliases:
+          - rbb.localhost
+
+  rbb-api-server:
+    image: amzracing/rbb-api-server
+    depends_on:
+      - postgres
+    restart: always
+    environment:
+      RBB_DB_USER: postgres
+      RBB_DB_PASS: testtest
+      RBB_DB_HOST: postgres
+      RBB_DB_DB: postgres
+      RBB_BEHIND_PROXY: 1
+    ports:
+      - 8002:8080
+    networks:
+      default:
+        aliases:
+          - api.rbb.localhost
+
+  rbb-reverse-proxy:
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx-api-subdirectory.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      default:
+        aliases:
+          - proxy.rbb.localhost
+
+  rbb-object-storage:
+    image: minio/minio
+    command: server /data
+    restart: always
+    environment:
+      MINIO_ACCESS_KEY: MINIOKEY
+      MINIO_SECRET_KEY: MINIOSUPERSECRET
+    volumes:
+      - ./buckets:/data
+    ports:
+      - 9000:9000
+    networks:
+      default:
+        aliases:
+          - minio.rbb.localhost
+
+  ######################################################
+  # The amount of workers spawned can be changed below #
+  ######################################################
+
+#  rbb-worker-1:
+#    image: amzracing/rbb-tools-gpu-nvidia
+#    depends_on:
+#      - rbb-api-server
+#    command: -U http://rbb-api-server:8080/api/v0 -u admin -p admin work --poll-period 5
+#    restart: always
+#    runtime: nvidia
+#    volumes:
+#    # The container needs access to the host X server for OpenGL acceleration
+#      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+#    # The container needs access to docker to spawn containers for simulation
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    # The container needs to run in an equal path as on the host so that it can share
+#    # files with the simulation container
+#      - "./workers/1:${PWD}/workers/1"
+#    working_dir: "${PWD}/workers/1"
+#    hostname: worker-1
+#    environment:
+#      NVIDIA_VISIBLE_DEVICES: all
+#      DISPLAY: "${DISPLAY}"
+#      RBB_HEADLESS: "force"
+#    networks:
+#      default:
+#        aliases:
+#          - worker-1.rbb.localhost
+#  rbb-worker-2:
+#    image: amzracing/rbb-tools-gpu-nvidia
+#    depends_on:
+#      - rbb-api-server
+#    restart: always
+#    command: -U http://rbb-api-server:8080/api/v0 -u admin -p admin work --poll-period 5
+#    runtime: nvidia
+#    volumes:
+#      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - "./workers/2:${PWD}/workers/2"
+#    working_dir: "${PWD}/workers/2"
+#    hostname: worker-2
+#    environment:
+#      NVIDIA_VISIBLE_DEVICES: all
+#      DISPLAY: "${DISPLAY}"
+#      RBB_HEADLESS: "force"
+#    networks:
+#      default:
+#        aliases:
+#          - worker-2.rbb.localhost
+
+  rbb-worker-no-gpu:
+    image: amzracing/rbb-tools
+    depends_on:
+      - rbb-api-server
+    restart: always
+    command: -U http://rbb-api-server:8080/api/v0 -u admin -p admin work --poll-period 5
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "./workers/no-gpu:${PWD}/workers/no-gpu"
+    working_dir: "${PWD}/workers/no-gpu"
+    hostname: worker-no-gpu
+    environment:
+      RBB_HEADLESS: "force"
+    networks:
+      default:
+        aliases:
+          - worker-no-gpu.rbb.localhost
+
+networks:
+  default:

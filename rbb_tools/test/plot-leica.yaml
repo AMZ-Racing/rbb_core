@@ -1,0 +1,34 @@
+title: "Matplotlib Test"
+tag: "matplotlib"
+description: ""
+author: ""
+rules:
+  matplotlib-test-rule:
+    plugin: "rbb_tools.plugins.matplotlib_plotter"
+    config:
+      data:
+        - name: "leica_x"
+          type: "raw"
+          topic: "/leica/position.point.x"
+        - name: "leica_y"
+          type: "raw"
+          topic: "/leica/position.point.y"
+
+      figures:
+        slam-pose:
+          title: "Leica Position"
+          xlabel: "X"
+          ylabel: "Y"
+          aspect: "equal"
+          width: 2000
+          height: 2000
+          plots:
+            - type: "scatterplot"
+              x: "leica_x"
+              y: "leica_y"
+              kwargs:
+                label: "SLAM Pose"
+
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.AllTopicsMatchingRule"
+        config:

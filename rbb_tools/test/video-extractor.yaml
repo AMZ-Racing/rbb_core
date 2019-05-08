@@ -1,0 +1,59 @@
+title: "Video Extractor Test"
+tag: "video-extractor"
+description: ""
+author: ""
+rules:
+  video-extractor-rule-left:
+    plugin: "rbb_tools.plugins.video_extractor"
+    config:
+      frame_rate: 20
+      frame_height: 1200
+      frame_width: 1600
+#     logo: 'logo_small.png'
+      logo_x: 5
+      logo_y: 5
+      text_x: 90
+      text_y: 17
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.ExactMatchingRule"
+        config:
+          topics:
+            /left_camera/pylon_camera_node/image_rect_color/compressed: "sensor_msgs/CompressedImage"
+          remapping:
+            /left_camera/pylon_camera_node/image_rect_color/compressed: "/image"
+  video-extractor-rule-right:
+    plugin: "rbb_tools.plugins.video_extractor"
+    config:
+      frame_rate: 20
+      frame_height: 1200
+      frame_width: 1600
+#     logo: 'logo_small.png'
+      logo_x: 5
+      logo_y: 5
+      text_x: 90
+      text_y: 17
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.ExactMatchingRule"
+        config:
+          topics:
+            /right_camera/pylon_camera_node/image_rect_color/compressed: "sensor_msgs/CompressedImage"
+          remapping:
+            /right_camera/pylon_camera_node/image_rect_color/compressed: "/image"
+  video-extractor-rule-mono:
+    plugin: "rbb_tools.plugins.video_extractor"
+    config:
+      frame_rate: 20
+      frame_height: 1200
+      frame_width: 1600
+#     logo: 'logo_small.png'
+      logo_x: 5
+      logo_y: 5
+      text_x: 90
+      text_y: 17
+    topic_matchers:
+      - type: "rbb_tools.extraction.matchers.ExactMatchingRule"
+        config:
+          topics:
+            /mono_camera/pylon_camera_node/image_rect_color/compressed: "sensor_msgs/CompressedImage"
+          remapping:
+            /mono_camera/pylon_camera_node/image_rect_color/compressed: "/image"
