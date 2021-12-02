@@ -84,16 +84,20 @@ services:
           - proxy.rbb.localhost
 
   rbb-object-storage:
-    image: minio/minio
-    command: server /data
+    image: quay.io/minio/minio:RELEASE.2021-11-03T03-36-36Z
+    command: server /data --console-address ":9001"
     restart: always
     environment:
-      MINIO_ACCESS_KEY: MINIOKEY
-      MINIO_SECRET_KEY: MINIOSUPERSECRET
+      MINIO_ROOT_USER: MINIOKEY
+      MINIO_ROOT_PASSWORD: MINIOSUPERSECRET
     volumes:
       - ./buckets:/data
+    expose:
+        - "9000"
+        - "9001"
     ports:
       - 9000:9000
+      - 9001:9001
     networks:
       default:
         aliases:

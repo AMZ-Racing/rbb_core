@@ -1,4 +1,4 @@
-FROM python:3-jessie
+FROM python:3.6.6
 MAINTAINER hhendrik@student.ethz.ch
 
 RUN apt-get update || true
