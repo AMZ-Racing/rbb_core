@@ -1944,10 +1944,21 @@ definitions:
       end_time:
         type: "string"
         format: "date-time"
-        description: "Start time of this bag."
+        description: "End time of this bag."
+      data_start_time:
+        type: "string"
+        format: "date-time"
+        description: "Start time of useful data in this bag."
+      data_end_time:
+        type: "string"
+        format: "date-time"
+        description: "End time of useful data in this bag."
       duration:
         type: "number"
-        description: "duration of this bag in seconds."
+        description: "Duration of this bag in seconds."
+      data_duration:
+        type: "number"
+        description: "Duration of useful data in this bag in seconds."
       messages:
         type: "integer"
         format: "int64"
@@ -1972,8 +1983,11 @@ definitions:
       duration: 6.02745618307040320615897144307382404804229736328125
       start_time: "2000-01-23T04:56:07.000+00:00"
       size: 0
+      data_end_time: "2000-01-23T04:56:07.000+00:00"
+      data_duration: 1.46581298050294517310021547018550336360931396484375
       name: "test-2017-11-11.bag"
-      messages: 1
+      data_start_time: "2000-01-23T04:56:07.000+00:00"
+      messages: 5
       extraction_failure: true
   BagDetailed:
     allOf:

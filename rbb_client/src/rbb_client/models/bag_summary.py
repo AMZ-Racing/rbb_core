@@ -48,7 +48,10 @@ class BagSummary(object):
             'size': 'int',
             'start_time': 'datetime',
             'end_time': 'datetime',
+            'data_start_time': 'datetime',
+            'data_end_time': 'datetime',
             'duration': 'float',
+            'data_duration': 'float',
             'messages': 'int',
             'tags': 'list[Tag]'
         }
@@ -65,7 +68,10 @@ class BagSummary(object):
             'size': 'size',
             'start_time': 'start_time',
             'end_time': 'end_time',
+            'data_start_time': 'data_start_time',
+            'data_end_time': 'data_end_time',
             'duration': 'duration',
+            'data_duration': 'data_duration',
             'messages': 'messages',
             'tags': 'tags'
         }
@@ -81,7 +87,10 @@ class BagSummary(object):
         self._size = None
         self._start_time = None
         self._end_time = None
+        self._data_start_time = None
+        self._data_end_time = None
         self._duration = None
+        self._data_duration = None
         self._messages = None
         self._tags = None
 
@@ -309,7 +318,7 @@ class BagSummary(object):
     def end_time(self):
         """
         Gets the end_time of this BagSummary.
-        Start time of this bag.
+        End time of this bag.
 
         :return: The end_time of this BagSummary.
         :rtype: datetime
@@ -320,7 +329,7 @@ class BagSummary(object):
     def end_time(self, end_time):
         """
         Sets the end_time of this BagSummary.
-        Start time of this bag.
+        End time of this bag.
 
         :param end_time: The end_time of this BagSummary.
         :type: datetime
@@ -328,10 +337,54 @@ class BagSummary(object):
         self._end_time = end_time
 
     @property
+    def data_start_time(self):
+        """
+        Gets the data_start_time of this BagSummary.
+        Start time of useful data in this bag.
+
+        :return: The data_start_time of this BagSummary.
+        :rtype: datetime
+        """
+        return self._data_start_time
+
+    @data_start_time.setter
+    def data_start_time(self, data_start_time):
+        """
+        Sets the data_start_time of this BagSummary.
+        Start time of useful data in this bag.
+
+        :param data_start_time: The data_start_time of this BagSummary.
+        :type: datetime
+        """
+        self._data_start_time = data_start_time
+
+    @property
+    def data_end_time(self):
+        """
+        Gets the data_end_time of this BagSummary.
+        End time of useful data in this bag.
+
+        :return: The data_end_time of this BagSummary.
+        :rtype: datetime
+        """
+        return self._data_end_time
+
+    @data_end_time.setter
+    def data_end_time(self, data_end_time):
+        """
+        Sets the data_end_time of this BagSummary.
+        End time of useful data in this bag.
+
+        :param data_end_time: The data_end_time of this BagSummary.
+        :type: datetime
+        """
+        self._data_end_time = data_end_time
+
+    @property
     def duration(self):
         """
         Gets the duration of this BagSummary.
-        duration of this bag in seconds.
+        Duration of this bag in seconds.
 
         :return: The duration of this BagSummary.
         :rtype: float
@@ -342,12 +395,34 @@ class BagSummary(object):
     def duration(self, duration):
         """
         Sets the duration of this BagSummary.
-        duration of this bag in seconds.
+        Duration of this bag in seconds.
 
         :param duration: The duration of this BagSummary.
         :type: float
         """
         self._duration = duration
+
+    @property
+    def data_duration(self):
+        """
+        Gets the data_duration of this BagSummary.
+        Duration of useful data in this bag in seconds.
+
+        :return: The data_duration of this BagSummary.
+        :rtype: float
+        """
+        return self._data_duration
+
+    @data_duration.setter
+    def data_duration(self, data_duration):
+        """
+        Sets the data_duration of this BagSummary.
+        Duration of useful data in this bag in seconds.
+
+        :param data_duration: The data_duration of this BagSummary.
+        :type: float
+        """
+        self._data_duration = data_duration
 
     @property
     def messages(self):

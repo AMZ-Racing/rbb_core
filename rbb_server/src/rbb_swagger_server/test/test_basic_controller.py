@@ -238,6 +238,30 @@ class TestBasicController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    def test_get_configuration_key(self):
+        """Test case for get_configuration_key
+
+        Get configuration key
+        """
+        response = self.client.open(
+            '/api/v0/configuration/{config_key}'.format(config_key='config_key_example'),
+            method='GET')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
+    def test_get_cron_endpoint(self):
+        """Test case for get_cron_endpoint
+
+        Endpoint that should be periodically triggered
+        """
+        query_string = [('jobs', 'jobs_example')]
+        response = self.client.open(
+            '/api/v0/cron',
+            method='GET',
+            query_string=query_string)
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
     def test_get_current_user(self):
         """Test case for get_current_user
 
@@ -525,6 +549,17 @@ class TestBasicController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    def test_list_user_accounts(self):
+        """Test case for list_user_accounts
+
+        List user acounts
+        """
+        response = self.client.open(
+            '/api/v0/users/account',
+            method='GET')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
     def test_new_bag_comment(self):
         """Test case for new_bag_comment
 
@@ -558,9 +593,11 @@ class TestBasicController(BaseTestCase):
 
         Create a new session
         """
+        query_string = [('valid_for', 56)]
         response = self.client.open(
             '/api/v0/sessions',
-            method='POST')
+            method='POST',
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -624,6 +661,20 @@ class TestBasicController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    def test_patch_task(self):
+        """Test case for patch_task
+
+        Partial update of task (this only supports a few fields)
+        """
+        task = None
+        response = self.client.open(
+            '/api/v0/queue/{task_identifier}'.format(task_identifier='task_identifier_example'),
+            method='PATCH',
+            data=json.dumps(task),
+            content_type='application/json')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
     def test_put_bag_meta(self):
         """Test case for put_bag_meta
 
@@ -656,6 +707,20 @@ class TestBasicController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    def test_put_configuration_key(self):
+        """Test case for put_configuration_key
+
+        Write configuration key
+        """
+        config_value = None
+        response = self.client.open(
+            '/api/v0/configuration/{config_key}'.format(config_key='config_key_example'),
+            method='PUT',
+            data=json.dumps(config_value),
+            content_type='application/json')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
     def test_put_current_user(self):
         """Test case for put_current_user
 
@@ -676,11 +741,13 @@ class TestBasicController(BaseTestCase):
         Create/update configuration
         """
         configuration_obj = BagExtractionConfiguration()
+        query_string = [('block_on_existing', true)]
         response = self.client.open(
             '/api/v0/extraction/configs/{config_name}'.format(config_name='config_name_example'),
             method='PUT',
             data=json.dumps(configuration_obj),
-            content_type='application/json')
+            content_type='application/json',
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -690,11 +757,13 @@ class TestBasicController(BaseTestCase):
         Create/update store
         """
         store = FileStore()
+        query_string = [('block_on_existing', true)]
         response = self.client.open(
             '/api/v0/file-storage/{store_name}'.format(store_name='store_name_example'),
             method='PUT',
             data=json.dumps(store),
-            content_type='application/json')
+            content_type='application/json',
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -718,11 +787,13 @@ class TestBasicController(BaseTestCase):
         Create/update a simulation environment
         """
         environment = SimulationEnvironmentDetailed()
+        query_string = [('block_on_existing', true)]
         response = self.client.open(
             '/api/v0/simulation-environments/{env_name}'.format(env_name='env_name_example'),
             method='PUT',
             data=json.dumps(environment),
-            content_type='application/json')
+            content_type='application/json',
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -732,11 +803,13 @@ class TestBasicController(BaseTestCase):
         Create/update store
         """
         store = BagStoreDetailed()
+        query_string = [('block_on_existing', true)]
         response = self.client.open(
             '/api/v0/stores/{store_name}'.format(store_name='store_name_example'),
             method='PUT',
             data=json.dumps(store),
-            content_type='application/json')
+            content_type='application/json',
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -745,11 +818,11 @@ class TestBasicController(BaseTestCase):
 
         Create/update store
         """
-        store = [List[str]()]
+        config_list = [List[str]()]
         response = self.client.open(
             '/api/v0/stores/{store_name}/auto-extraction-configs'.format(store_name='store_name_example'),
             method='PUT',
-            data=json.dumps(store),
+            data=json.dumps(config_list),
             content_type='application/json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -788,11 +861,13 @@ class TestBasicController(BaseTestCase):
         Change user information
         """
         user = User()
+        query_string = [('block_on_existing', true)]
         response = self.client.open(
             '/api/v0/users/account/{alias}'.format(alias='alias_example'),
             method='PUT',
             data=json.dumps(user),
-            content_type='application/json')
+            content_type='application/json',
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

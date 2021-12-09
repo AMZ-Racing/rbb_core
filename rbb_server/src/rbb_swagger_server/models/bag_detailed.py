@@ -19,7 +19,7 @@ class BagDetailed(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, detail_type: str=None, name: str=None, store_data: object=None, discovered: datetime=None, extraction_failure: bool=None, in_trash: bool=None, is_extracted: bool=None, meta_available: bool=None, size: int=None, start_time: datetime=None, end_time: datetime=None, duration: float=None, messages: int=None, tags: List[Tag]=None, topics: List[Topic]=None, products: List[Product]=None, comment: str=None):  # noqa: E501
+    def __init__(self, detail_type: str=None, name: str=None, store_data: object=None, discovered: datetime=None, extraction_failure: bool=None, in_trash: bool=None, is_extracted: bool=None, meta_available: bool=None, size: int=None, start_time: datetime=None, end_time: datetime=None, data_start_time: datetime=None, data_end_time: datetime=None, duration: float=None, data_duration: float=None, messages: int=None, tags: List[Tag]=None, topics: List[Topic]=None, products: List[Product]=None, comment: str=None):  # noqa: E501
         """BagDetailed - a model defined in Swagger
 
         :param detail_type: The detail_type of this BagDetailed.  # noqa: E501
@@ -44,8 +44,14 @@ class BagDetailed(Model):
         :type start_time: datetime
         :param end_time: The end_time of this BagDetailed.  # noqa: E501
         :type end_time: datetime
+        :param data_start_time: The data_start_time of this BagDetailed.  # noqa: E501
+        :type data_start_time: datetime
+        :param data_end_time: The data_end_time of this BagDetailed.  # noqa: E501
+        :type data_end_time: datetime
         :param duration: The duration of this BagDetailed.  # noqa: E501
         :type duration: float
+        :param data_duration: The data_duration of this BagDetailed.  # noqa: E501
+        :type data_duration: float
         :param messages: The messages of this BagDetailed.  # noqa: E501
         :type messages: int
         :param tags: The tags of this BagDetailed.  # noqa: E501
@@ -69,7 +75,10 @@ class BagDetailed(Model):
             'size': int,
             'start_time': datetime,
             'end_time': datetime,
+            'data_start_time': datetime,
+            'data_end_time': datetime,
             'duration': float,
+            'data_duration': float,
             'messages': int,
             'tags': List[Tag],
             'topics': List[Topic],
@@ -89,7 +98,10 @@ class BagDetailed(Model):
             'size': 'size',
             'start_time': 'start_time',
             'end_time': 'end_time',
+            'data_start_time': 'data_start_time',
+            'data_end_time': 'data_end_time',
             'duration': 'duration',
+            'data_duration': 'data_duration',
             'messages': 'messages',
             'tags': 'tags',
             'topics': 'topics',
@@ -108,7 +120,10 @@ class BagDetailed(Model):
         self._size = size
         self._start_time = start_time
         self._end_time = end_time
+        self._data_start_time = data_start_time
+        self._data_end_time = data_end_time
         self._duration = duration
+        self._data_duration = data_duration
         self._messages = messages
         self._tags = tags
         self._topics = topics
@@ -368,7 +383,7 @@ class BagDetailed(Model):
     def end_time(self) -> datetime:
         """Gets the end_time of this BagDetailed.
 
-        Start time of this bag.  # noqa: E501
+        End time of this bag.  # noqa: E501
 
         :return: The end_time of this BagDetailed.
         :rtype: datetime
@@ -379,7 +394,7 @@ class BagDetailed(Model):
     def end_time(self, end_time: datetime):
         """Sets the end_time of this BagDetailed.
 
-        Start time of this bag.  # noqa: E501
+        End time of this bag.  # noqa: E501
 
         :param end_time: The end_time of this BagDetailed.
         :type end_time: datetime
@@ -388,10 +403,56 @@ class BagDetailed(Model):
         self._end_time = end_time
 
     @property
+    def data_start_time(self) -> datetime:
+        """Gets the data_start_time of this BagDetailed.
+
+        Start time of useful data in this bag.  # noqa: E501
+
+        :return: The data_start_time of this BagDetailed.
+        :rtype: datetime
+        """
+        return self._data_start_time
+
+    @data_start_time.setter
+    def data_start_time(self, data_start_time: datetime):
+        """Sets the data_start_time of this BagDetailed.
+
+        Start time of useful data in this bag.  # noqa: E501
+
+        :param data_start_time: The data_start_time of this BagDetailed.
+        :type data_start_time: datetime
+        """
+
+        self._data_start_time = data_start_time
+
+    @property
+    def data_end_time(self) -> datetime:
+        """Gets the data_end_time of this BagDetailed.
+
+        End time of useful data in this bag.  # noqa: E501
+
+        :return: The data_end_time of this BagDetailed.
+        :rtype: datetime
+        """
+        return self._data_end_time
+
+    @data_end_time.setter
+    def data_end_time(self, data_end_time: datetime):
+        """Sets the data_end_time of this BagDetailed.
+
+        End time of useful data in this bag.  # noqa: E501
+
+        :param data_end_time: The data_end_time of this BagDetailed.
+        :type data_end_time: datetime
+        """
+
+        self._data_end_time = data_end_time
+
+    @property
     def duration(self) -> float:
         """Gets the duration of this BagDetailed.
 
-        duration of this bag in seconds.  # noqa: E501
+        Duration of this bag in seconds.  # noqa: E501
 
         :return: The duration of this BagDetailed.
         :rtype: float
@@ -402,13 +463,36 @@ class BagDetailed(Model):
     def duration(self, duration: float):
         """Sets the duration of this BagDetailed.
 
-        duration of this bag in seconds.  # noqa: E501
+        Duration of this bag in seconds.  # noqa: E501
 
         :param duration: The duration of this BagDetailed.
         :type duration: float
         """
 
         self._duration = duration
+
+    @property
+    def data_duration(self) -> float:
+        """Gets the data_duration of this BagDetailed.
+
+        Duration of useful data in this bag in seconds.  # noqa: E501
+
+        :return: The data_duration of this BagDetailed.
+        :rtype: float
+        """
+        return self._data_duration
+
+    @data_duration.setter
+    def data_duration(self, data_duration: float):
+        """Sets the data_duration of this BagDetailed.
+
+        Duration of useful data in this bag in seconds.  # noqa: E501
+
+        :param data_duration: The data_duration of this BagDetailed.
+        :type data_duration: float
+        """
+
+        self._data_duration = data_duration
 
     @property
     def messages(self) -> int:
