@@ -138,7 +138,10 @@ CREATE TABLE "rosbag" (
   size BIGINT,
   start_time timestamp,
   end_time timestamp,
+  data_start_time timestamp,
+  data_end_time timestamp,
   duration DOUBLE PRECISION,
+  data_duration DOUBLE PRECISION,
   messages BIGINT,
 
   -- Additional

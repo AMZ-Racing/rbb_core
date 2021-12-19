@@ -192,7 +192,10 @@ class Extractor(object):
         self._bag_message_count = 0
         self._bag_start = 0
         self._bag_end = 0
+        self._data_bag_start = 0
+        self._data_bag_end = 0
         self._bag_duration = 0
+        self._data_bag_duration = 0
         self._errors = []
 
         if not temp_dir:
@@ -329,7 +332,10 @@ class Extractor(object):
                 'size': 0,
                 'start_time': 0,
                 'end_time': 0,
+                'data_start_time': 0,
+                'data_end_time': 0,
                 'duration': 0,
+                'data_duration': 0,
                 'messages': 0,
                 'topics': []
             },
@@ -358,7 +364,10 @@ class Extractor(object):
         data['bag_info']['size'] = self._bag_size
         data['bag_info']['start_time'] = datetime.datetime.fromtimestamp(self._bag_start)
         data['bag_info']['end_time'] = datetime.datetime.fromtimestamp(self._bag_end)
+        data['bag_info']['data_start_time'] = datetime.datetime.fromtimestamp(self._bag_start)
+        data['bag_info']['data_end_time'] = datetime.datetime.fromtimestamp(self._bag_end)
         data['bag_info']['duration'] = self._bag_duration
+        data['bag_info']['data_duration'] = self._data_bag_duration
         data['bag_info']['messages'] = self._bag_message_count
 
     def _read_bag(self, reindex=True):
@@ -380,7 +389,10 @@ class Extractor(object):
                 self._bag_message_count = bag.get_message_count()
                 self._bag_start = bag.get_start_time()
                 self._bag_end = bag.get_end_time()
+                self._data_bag_start = bag.get_start_time()
+                self._data_bag_end = bag.get_end_time()
                 self._bag_duration = self._bag_end - self._bag_start
+                self._data_bag_duration = self._data_bag_end - self._data_bag_start
         except rosbag.ROSBagUnindexedException:
             self._logger.warning("Bag is UNINDEXED!")
 

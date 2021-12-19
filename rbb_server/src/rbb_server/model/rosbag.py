@@ -46,7 +46,10 @@ class Rosbag(Base):
     size = Column(Integer)
     start_time = Column(DateTime)
     end_time = Column(DateTime)
+    data_start_time = Column(DateTime)
+    data_end_time = Column(DateTime)
     duration = Column(Float)
+    data_duration = Column(Float)
     messages = Column(Integer)
     comment = Column(String)  # This is more of a description
 
@@ -72,7 +75,10 @@ class Rosbag(Base):
         model.size=self.size
         model.start_time=self.start_time
         model.end_time=self.end_time
+        model.data_start_time=self.data_start_time
+        model.data_end_time=self.data_end_time
         model.duration=self.duration
+        model.data_duration=self.data_duration
         model.messages=self.messages
         model.tags = [x.to_swagger_model() for x in self.tags]
         return model
@@ -105,7 +111,10 @@ class Rosbag(Base):
         self.size = model.size
         self.start_time = model.start_time.replace(tzinfo=None) if model.start_time else None
         self.end_time = model.end_time.replace(tzinfo=None) if model.end_time else None
+        self.data_start_time = model.start_time.replace(tzinfo=None) if model.start_time else None
+        self.data_end_time = model.end_time.replace(tzinfo=None) if model.end_time else None
         self.duration = model.duration
+        self.data_duration = model.data_duration
         self.messages = model.messages
         self.comment = model.comment
 

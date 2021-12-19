@@ -44,7 +44,7 @@ services:
           - db.ats.localhost
 
   rbb-web:
-    image: amzracing/rbb-web
+    image: amzracing/rbb-web:latest
     restart: always
     ports:
       - 8001:80
@@ -54,7 +54,7 @@ services:
           - rbb.localhost
 
   rbb-api-server:
-    image: amzracing/rbb-api-server
+    image: amzracing/rbb-api-server:latest
     depends_on:
       - postgres
     restart: always
@@ -155,7 +155,7 @@ services:
 #          - worker-2.rbb.localhost
 
   rbb-worker-no-gpu:
-    image: amzracing/rbb-tools
+    image: amzracing/rbb-tools:latest
     depends_on:
       - rbb-api-server
     restart: always
