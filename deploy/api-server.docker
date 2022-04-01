@@ -9,5 +9,6 @@ COPY ./rbb_storage /var/app/rbb_storage
 
 RUN pip install -r /var/app/rbb_server/requirements.txt
 RUN pip install -r /var/app/rbb_storage/requirements.txt
+RUN pip install -r /var/app/rbb_server/test-requirements.txt
 
 CMD /var/app/rbb_server/run-server

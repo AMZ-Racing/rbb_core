@@ -50,7 +50,7 @@ class TestStorage(unittest.TestCase):
         test_store = RosbagStore(
             name="some-test-store",
             description="test",
-            store_type="dropbox",
+            store_type="s3",
             store_data="{}"
         )
         Database.get_session().add(test_store)
@@ -62,7 +62,7 @@ class TestStorage(unittest.TestCase):
         test_store = RosbagStore(
             name="some-test-store-update",
             description="test",
-            store_type="dropbox",
+            store_type="s3",
             store_data="{}"
         )
         Database.get_session().add(test_store)
