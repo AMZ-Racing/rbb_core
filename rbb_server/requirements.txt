@@ -6,7 +6,7 @@ clickclick==20.10.2
 connexion==1.1.9
 dataclasses==0.8
 Flask==1.1.4
-Flask-Cors==3.0.0
+Flask-Cors==3.0.9
 gunicorn==19.7.1
 idna==3.3
 importlib-metadata==4.8.2
