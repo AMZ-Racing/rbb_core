@@ -1,6 +1,7 @@
 # AMZ-Driverless
-#  Copyright (c) 2019 Authors:
+#  Copyright (c) 2019-2022 Authors:
 #   - Huub Hendrikx <hhendrik@ethz.ch>
+#   - Adrian Brandemuehl <abrandemuehl@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +42,7 @@ services:
     networks:
       default:
         aliases:
-          - db.ats.localhost
+          - db.rbb.localhost
 
   rbb-web:
     image: amzracing/rbb-web
@@ -155,7 +156,7 @@ services:
 #          - worker-2.rbb.localhost
 
   rbb-worker-no-gpu:
-    image: amzracing/rbb-tools
+    image: amzracing/rbb-tools:kinetic
     depends_on:
       - rbb-api-server
     restart: always

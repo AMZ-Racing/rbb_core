@@ -1,5 +1,5 @@
 FROM ros:kinetic-ros-base-xenial
-MAINTAINER hhendrik@student.ethz.ch
+MAINTAINER abrandemuehl@gmail.com
 
 RUN apt-get update && apt-get upgrade -y && apt-get install ros-kinetic-desktop \
 mesa-utils llvm-dev \
