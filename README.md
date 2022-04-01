@@ -14,7 +14,8 @@ most likely work without problems). The web interface is only tested with **Goog
 
 ## Quickstart
 
-The best way to find out if this software is in anyway useful for your project, is to run it on your own computer. This can be done in a few simple steps. (A fast internet connection is required, since several gigabytes need to be downloaded)
+The best way to find out if this software is in anyway useful for your project, is to run it on your own computer. This can be done in a few simple steps. (A fast internet connection is required, since several gigabytes need to be downloaded) 
+This will deploy RBB with the public images from Docker Hub. If you want to build your own images you can do so with the `build-containers.sh` script and change the `docker-compose.yaml` file accordingly.
 
 1. Install docker, if you haven't got it already. [Follow the instructions here](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository)
 

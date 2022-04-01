@@ -1,8 +1,30 @@
-connexion == 1.1.9
-python_dateutil == 2.6.0
-setuptools >= 21.0.0
-sqlalchemy >= 1.1.15
-psycopg2 >= 2.7.3
-flask-cors >= 3.0.0
-gunicorn >= 19.7.1
-pytz
+attrs==21.2.0
+certifi==2021.10.8
+charset-normalizer==2.0.7
+click==7.1.2
+clickclick==20.10.2
+connexion==1.1.9
+dataclasses==0.8
+Flask==1.1.4
+Flask-Cors==3.0.0
+gunicorn==19.7.1
+idna==3.3
+importlib-metadata==4.8.2
+inflection==0.5.1
+itsdangerous==1.1.0
+Jinja2==2.11.3
+jsonschema==3.2.0
+MarkupSafe==2.0.1
+psycopg2==2.7.3
+pyrsistent==0.18.0
+python-dateutil==2.6.0
+pytz==2019.1
+PyYAML==6.0
+requests==2.26.0
+six==1.16.0
+SQLAlchemy==1.1.15
+swagger-spec-validator==2.7.4
+typing-extensions==4.0.0
+urllib3==1.26.7
+Werkzeug==0.16.1
+zipp==3.6.0
