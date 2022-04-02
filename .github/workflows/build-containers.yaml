@@ -6,6 +6,11 @@ on:
 jobs:
   build-api-server-container:
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
@@ -13,7 +18,7 @@ jobs:
       - name: Build worker container
         uses: docker/build-push-action@v2
         with:
-          file: deploy/worker-no-gpu.docker
+          file: deploy/worker-kinetic-no-gpu.docker
           context: .
           push: false
           tags: amzracing/rbb-tools:latest
@@ -24,3 +29,11 @@ jobs:
           context: .
           push: false
           tags: amzracing/rbb-tools:latest
+
+      - name: Build GPU worker container
+        uses: docker/build-push-action@v2
+        with:
+          file: deploy/worker-kinetic-gpu.docker
+          context: .
+          push: false
+          tags: amzracing/rbb-tools-gpu-nvidia:latest

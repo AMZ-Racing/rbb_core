@@ -5,7 +5,7 @@ FROM nvidia/opengl:1.1-glvnd-runtime-ubuntu16.04
 # otherwise OpenGL cannot be used inside the container.
 # See: https://github.com/NVIDIA/nvidia-docker
 
-MAINTAINER hhendrik@student.ethz.ch
+MAINTAINER abrandemuehl@gmail.com
 
 # install packages
 RUN apt-get update && apt-get install -q -y \
@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -q -y \
     && rm -rf /var/lib/apt/lists/*
 
 # setup keys
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
+RUN apt-get update && apt-get install -y curl
+RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
 
 # setup sources.list
 RUN echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list
@@ -41,3 +42,23 @@ RUN apt-get update && apt-get install ros-kinetic-desktop -y \
     && rm -rf /var/lib/apt/lists/*
 
 CMD bash
+
+RUN apt-get update && apt-get install -y python-pip xserver-xephyr xvfb xdotool ffmpeg ssh-client
+
+# TODO: Change this to download it from somewhere
+COPY ./deploy/local-stack/virtualgl_2.5.2_amd64.deb /var/app/virtualgl_2.5.2_amd64.deb
+RUN dpkg -i /var/app/virtualgl_2.5.2_amd64.deb
+
+COPY ./rbb_client /var/app/rbb_client
+COPY ./rbb_tools /var/app/rbb_tools
+COPY ./rbb_storage /var/app/rbb_storage
+
+RUN pip install -r /var/app/rbb_client/requirements.txt \
+     && pip install -r /var/app/rbb_tools/requirements.txt \
+     && pip install -r /var/app/rbb_storage/requirements.txt
+
+COPY ./deploy/worker-entrypoint.sh /run.sh
+RUN chmod +x /run.sh
+
+ENTRYPOINT ["/run.sh"]
+CMD ["--help"]
