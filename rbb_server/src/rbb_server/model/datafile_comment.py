@@ -1,6 +1,6 @@
 # AMZ-Driverless
-#  Copyright (c) 2019 Authors:
-#   - Huub Hendrikx <hhendrik@ethz.ch>
+#  Copyright (c) 2022 Authors:
+#   - Adrian Brandemuehl <abrandemuehl@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,26 +20,43 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
-
 from sqlalchemy import *
+from sqlalchemy.orm import relationship
 
-from rbb_swagger_server.models import Tag as SwaggerTag
+from rbb_swagger_server.models import Comment
 from .base import Base
-from rbb_server.model.user import User
 
 
-class Tag(Base):
-    __tablename__ = "tags"
+class DataFileComment(Base):
+    __tablename__ = "datafile_comment"
     uid = Column(Integer, primary_key=True)
-    tag = Column(String(100))
-    color = Column(String(10))
+    datafile_id = Column(Integer, ForeignKey('datafile.uid'))
+    user_id = Column(Integer, ForeignKey('rbb_user.uid'))
+    comment_text = Column(String(1000))
+    created = Column(DateTime, server_default="now() AT TIME ZONE 'utc'")
 
-    def to_swagger_model(self, user: Union[User, None]=None):
-        return SwaggerTag(
-            tag=self.tag,
-            color=self.color)
+    # Relationship
+    datafile = relationship("DataFile", back_populates="comments")
+    user = relationship("User")
 
-    def from_swagger_model(self, api_model: SwaggerTag):
-        self.tag = api_model.tag.strip().lower()
-        self.color = api_model.color
+    def to_swagger_model(self, model=None, user=None):
+        if not model:
+            model = Comment()
+
+        model.identifier = self.uid
+        model.created = self.created
+        model.comment_text = self.comment_text
+
+        if self.user_id:
+            model.posted_by = self.user.to_swagger_model()
+        else:
+            model.posted_by = None
+
+        return model
+
+    def from_swagger_model(self, api_model):
+        self.comment_text = api_model.comment_text
+        self.created = api_model.created.replace(tzinfo=None)
+        pass
+
+

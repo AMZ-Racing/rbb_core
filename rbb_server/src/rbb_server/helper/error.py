@@ -27,7 +27,7 @@ from flask import current_app
 from rbb_swagger_server.models import Error
 
 
-def handle_exception(e):
+def handle_exception(e: Exception) -> Error:
     logging.exception(e)
     if current_app.config['TESTING']:
         return Error(code=500, message="Internal server error, see log for exception: " + repr(e)), 500

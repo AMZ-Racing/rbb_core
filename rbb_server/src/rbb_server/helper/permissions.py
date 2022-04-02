@@ -34,6 +34,8 @@ class Permissions(Enum):
     FileStoreWrite = "file_store_write"
     BagStoreRead = "bag_store_read"
     BagStoreWrite = "bag_store_write"
+    DataFileStoreRead = "datafile_store_read"
+    DataFileStoreWrite = "datafile_store_write"
 
     ExtractionConfigRead = "extraction_config_read"
     ExtractionConfigWrite = "extraction_config_write"
@@ -42,6 +44,11 @@ class Permissions(Enum):
     BagWrite = "bag_write"
     BagCommentRead = "bag_comment_read"
     BagCommentWrite = "bag_comment_write"
+
+    DataFileRead = "datafile_read"
+    DataFileWrite = "datafile_write"
+    DataFileCommentRead = "datafile_comment_read"
+    DataFileCommentWrite = "datafile_comment_write"
 
     UsersRead = "users_read"
     UsersWrite = "users_write"

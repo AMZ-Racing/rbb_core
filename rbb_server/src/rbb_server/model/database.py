@@ -28,6 +28,7 @@ import os
 
 # Models
 from .base import Base
+from .datafile import DataFile
 from .rosbag import Rosbag
 from .rosbag_store import RosbagStore
 from .rosbag_product import RosbagProduct
