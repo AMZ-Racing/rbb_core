@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd test/
+docker compose up --build \
+    --abort-on-container-exit \
+    --always-recreate-deps \
+    --remove-orphans \
+    --force-recreate \
+    --renew-anon-volumes

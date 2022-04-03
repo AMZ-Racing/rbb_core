@@ -1,0 +1,19 @@
+FROM python:3.6.6
+MAINTAINER abrandemuehl@gmail.com
+
+RUN apt-get update || true
+RUN apt-get install -y postgresql-client libpq-dev && rm -rf /var/lib/apt/lists/*
+
+COPY ./rbb_server/requirements.txt /rbb_server-requirements.txt
+COPY ./rbb_client/requirements.txt /rbb_client-requirements.txt
+COPY ./rbb_storage/requirements.txt /rbb_storage-requirements.txt
+COPY ./rbb_server/test-requirements.txt /rbb_server-test-requirements.txt
+
+RUN pip install \
+    -r /rbb_server-test-requirements.txt \
+    -r /rbb_server-requirements.txt \
+    -r /rbb_client-requirements.txt \
+    -r /rbb_storage-requirements.txt
+
+COPY ./test/run-tests /run-tests
+CMD /run-tests

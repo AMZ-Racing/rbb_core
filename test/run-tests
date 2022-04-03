@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+# Wait for postgres to be up
+until psql -h "$RBB_DB_HOST" -U "postgres" -c '\q'; do
+  echo "Postgres is unavailable - sleeping"
+  sleep 1
+done
+
+echo "Postgres is up - executing command"
+
+
+# Setup the correct internal python paths
+ROOT_DIR="/rbb_core"
+export PYTHONPATH="${PYTHONPATH}:${ROOT_DIR}/rbb_storage/src/:${ROOT_DIR}/rbb_server/src:${ROOT_DIR}/rbb_client/src:${ROOT_DIR}/rbb_server/test/rbb_server_test"
+
+echo $PYTHONPATH
+python -m unittest discover -s /rbb_core/rbb_server/test/
