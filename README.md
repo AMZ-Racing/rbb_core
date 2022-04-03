@@ -9,29 +9,29 @@ If you currently simulate your robot with for example Gazebo, and want to automa
 
 ![alt text](docs/s2.png "Screenshot 2")
 
-This software has been developed on **Ubuntu 16.04** with **ROS Kinetic** (Newer versions of ROS (NOT ROS 2) will 
+This software has been developed on **Ubuntu 16.04** with **ROS Kinetic** (Newer versions of ROS (NOT ROS 2) will
 most likely work without problems). The web interface is only tested with **Google Chrome**.
 
 ## Quickstart
 
-The best way to find out if this software is in anyway useful for your project, is to run it on your own computer. This can be done in a few simple steps. (A fast internet connection is required, since several gigabytes need to be downloaded) 
+The best way to find out if this software is in anyway useful for your project, is to run it on your own computer. This can be done in a few simple steps. (A fast internet connection is required, since several gigabytes need to be downloaded)
 This will deploy RBB with the public images from Docker Hub. If you want to build your own images you can do so with the `build-containers.sh` script and change the `docker-compose.yaml` file accordingly.
 
 1. Install docker, if you haven't got it already. [Follow the instructions here](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository)
 
 2. Install docker-compose, [Follow the instructions here](https://docs.docker.com/compose/install/#install-compose)
 
-3. Clone this repository:  
+3. Clone this repository:
    `git clone https://github.com/AMZ-Driverless/rbb_core.git`
-   
-4. Run docker-compose in the local-stack subdirectory:  
+
+4. Run docker-compose in the local-stack subdirectory:
    `cd rbb_core/deploy/local-stack && docker-compose up`
-   
-5. In your browser go to `http://localhost` and login 
+
+5. In your browser go to `http://localhost` and login
    with user *admin* and password *admin*
-   
+
 6. The demo setup comes pre-configured with several external sources.
-   
+
 7. Data is stored in a local [minio](https://min.io/) server. The control panel can be accessed on `http://localhost:9000` (login with MINIOKEY / MINIOSUPERSECRET)
 
 ## Development
@@ -61,3 +61,7 @@ To record RViz the following dependencies need to be installed:
 ### Documentation
 
 See the docs directory. For bag visualization configuration see [Rosbag visualizations](docs/configuring-bag-visualization.md).
+
+### Running the tests
+
+Run the script `run-tests` from the root of the repository.

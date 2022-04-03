@@ -94,7 +94,7 @@ class TestQueue(unittest.TestCase):
                     put_task_inner(task.identifier, task, admin_user)
                 else:
                     # Check if the queue is empty, if not then there was a collision
-                    count = Database.get_engine().execute('''select count(uid) from task_queue where assigned_to='' ''').scalar()
+                    count = Database.get_session().execute('''select count(uid) from task_queue where assigned_to='' ''').scalar()
 
                     if count > 0:
                         number_of_collisions += 1

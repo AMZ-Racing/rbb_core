@@ -27,7 +27,7 @@ from multiprocessing import Process
 import urllib.request
 
 import rbb_client
-import test_server
+import rbb_server_test.test_server
 
 
 class ClientServerBaseTestCase(unittest.TestCase):

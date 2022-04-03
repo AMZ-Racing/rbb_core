@@ -4,7 +4,7 @@ on:
     branches:
       - master
 jobs:
-  build-api-server-container:
+  build-containers:
     runs-on: ubuntu-latest
     services:
       registry:

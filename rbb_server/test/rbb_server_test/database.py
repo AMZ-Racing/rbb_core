@@ -41,7 +41,7 @@ def close_database():
 
 
 def setup_database_for_test():
-    Database.init(debug=True)
+    Database.init(debug=False)
 
     engine = Database.get_engine()
     connection = engine.connect()
@@ -77,6 +77,3 @@ def setup_database_for_test():
 
     # Make current session use the testing schema
     Database.get_session().execute("SET search_path TO unittest")
-
-
-
