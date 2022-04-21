@@ -64,7 +64,8 @@ def command(store_name, api):
         return
 
     try:
-        bags = api.list_bags(store_name)
+        bags = api.list_bags(store_name, in_trash=False)
+        trashed_bags = api.list_bags(store_name, in_trash=True)
     except Exception as e:
         print("Reason: " + str(e))
         return
@@ -74,9 +75,17 @@ def command(store_name, api):
         info = store.list_file(bag.store_data)
         bags_by_name[info.get_path()] = bag
 
+    trashed_bags_by_name = {}
+    for bag in trashed_bags:
+        info = store.list_file(bag.store_data)
+        trashed_bags_by_name[info.get_path()] = bag
+
     store_files = store.list_files()
     for file in store_files:
         if file.get_name()[-3:] != "bag":
+            continue
+
+        if file.get_path() in trashed_bags_by_name:
             continue
 
         if not file.get_path() in bags_by_name:
