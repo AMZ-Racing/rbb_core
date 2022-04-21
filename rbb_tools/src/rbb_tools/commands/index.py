@@ -38,6 +38,7 @@ def register_bag_file(api, store_name, file):
     bag.topics=[]
     bag.products=[]
     bag.extraction_failure = False
+    bag.in_trash = False
 
     api.put_bag_meta(store_name, bag.name, bag)
 
