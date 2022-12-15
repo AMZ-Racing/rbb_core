@@ -31,7 +31,7 @@ class TestConfiguration(ClientServerBaseTestCase):
         api_instance = self.get_admin_api()
         config = dict(api_instance.get_configuration_key("*"))
 
-        self.assertDictEqual(config['secret']['dropbox'], {
+        self.assertDictEqual(config['secret']['s3'], {
             'app_key': "",
             'app_secret': ""
         })

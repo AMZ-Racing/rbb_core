@@ -200,7 +200,7 @@ class TestStores(ClientServerBaseTestCase):
         bag = BagDetailed()
         bag.detail_type="BagDetailed"
         bag.name="unittest.bag"
-        bag.store_data={'dropbox': {'uuid': 23094, 'path': '/test/test/test'}}
+        bag.store_data={'s3': {'uuid': 23094, 'path': '/test/test/test'}}
         bag.is_extracted=True
         bag.meta_available=True
         bag.discovered=datetime.datetime.now(datetime.timezone.utc)

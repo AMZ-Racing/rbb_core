@@ -1924,7 +1924,7 @@ definitions:
         example: 'BagStoreDetailed'
       name:
         type: string
-        example: my-dropbox
+        example: my-s3
     required:
       - detail_type
       - name
@@ -1941,7 +1941,7 @@ definitions:
           store_type:
             type: string
             description: Type of store.
-            example: dropbox
+            example: s3
           store_data:
             type: object
             description: Data that is specific to the store type.
@@ -2154,7 +2154,7 @@ definitions:
       store_type:
         type: string
         description: Type of store.
-        example: dropbox
+        example: s3
       store_data:
         type: object
         description: Data that is specific to the store type.
@@ -2178,7 +2178,7 @@ definitions:
       store_name:
         type: string
         description: Name of the file store
-        example: 'dropbox'
+        example: 's3'
       uid:
         type: integer
         description: Unique file id

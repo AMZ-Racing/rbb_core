@@ -1,5 +1,5 @@
 # RBB Core
-This repository contains the core of the Rosbag Bazaar (RBB), a tool to index/visualize/manage rosbags on remote storage systems. Additionally it provides a web interface and framework for automated simulations. A work queue similar to most continuous integration systems allows processing of long running compute intensive jobs for both rosbag visualization and simulation. The aim is to keep the underlying storage system completely abstracted to allow development of plugins for most cloud based storage systems. (Currently only AWS S3 compatible storage is fully supported, and Dropbox is partially supported)
+This repository contains the core of the Rosbag Bazaar (RBB), a tool to index/visualize/manage rosbags on remote storage systems. Additionally it provides a web interface and framework for automated simulations. A work queue similar to most continuous integration systems allows processing of long running compute intensive jobs for both rosbag visualization and simulation. The aim is to keep the underlying storage system completely abstracted to allow development of plugins for most cloud based storage systems. (Currently only AWS S3 compatible storage is fully supported)
 
 If you are using RViz to look at the content of your bag files, and want to have this visualization recorded for every rosbag automatically, and the recordings available on any computer with internet access. This software might be something for you.
 
@@ -42,7 +42,6 @@ This will deploy RBB with the public images from Docker Hub. If you want to buil
 * **rbb_server/rbb_swagger_server** (Python 3.5): Auto generated swagger server
 * **rbb_client** (Python 2.7 & 3.5): Auto generated swagger API client
 * **rbb_storage/rbb_storage** (Python 2.7 & 3.5): Storage abstraction layer
-* **rbb_storage/rbb_storage_dropbox** (Python 2.7 & 3.5): Integration with dropbox
 * **rbb_storage/rbb_storage_s3** (Python 2.7 & 3.5): Integration with AWS S3
 * **rbb_tools** (Python 2.7): Actual generation of content from the rosbags
 

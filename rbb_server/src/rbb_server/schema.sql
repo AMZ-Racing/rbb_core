@@ -88,8 +88,6 @@ CREATE TABLE "configuration" (
   description VARCHAR(255) NOT NULL DEFAULT ''
 );
 
-INSERT INTO "configuration" (config_key, value, description) VALUES ('secret.dropbox.app_key' , '', '');
-INSERT INTO "configuration" (config_key, value, description) VALUES ('secret.dropbox.app_secret' , '', '');
 INSERT INTO "configuration" (config_key, value, description) VALUES ('secret.jenkins.user' , '', '');
 INSERT INTO "configuration" (config_key, value, description) VALUES ('secret.jenkins.password' , '', '');
 INSERT INTO "configuration" (config_key, value, description) VALUES ('worker.default.poll_interval' , '10', '');
